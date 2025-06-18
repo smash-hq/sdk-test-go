@@ -2,8 +2,14 @@
   "title": "Scrape data from google play store",
   "type": "object",
   "schemaVersion": 1,
-  "required": ["q"],
+  "required": ["q","limit"],
   "properties": {
+    "limit": {
+      "title": "Limit",
+      "description": "Parameter defines the maximum number of search results to save. ",
+      "type": "integer",
+      "default": 10000
+    },
     "q": {
       "title": "Search Query",
       "description": "Parameter defines the query you want to search. You can use anything that you would use in a regular Google search. e.g. inurl:, site:, intitle:. We also support advanced search query parameters such as as_dt and as_eq.",
