@@ -115,7 +115,7 @@ func kvSave(kv kv.KV, ctx context.Context, scrape []byte, id string, times int) 
 		log.Warnf("save kv failed: %v", sErr)
 	}
 	if !value {
-		log.Infof("save kv failed")
+		log.Infof("save kv failed, isErr: %v", value)
 	}
 }
 
@@ -139,7 +139,7 @@ func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape
 		log.Warnf("save dataset failed: %v", err)
 	}
 	if !items {
-		log.Infof("save dataset failed")
+		log.Infof("save dataset failed, isErr: %v", items)
 	}
 }
 
