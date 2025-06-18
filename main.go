@@ -1,16 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/chai2010/webp"
 	"github.com/scrapeless-ai/sdk-go/scrapeless"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/actor"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/log"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/scraping"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/dataset"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/kv"
-	"io"
+	"image/png"
 	"net/http"
 	"time"
 )
@@ -96,11 +98,11 @@ func objectSave(client *scrapeless.Client, ctx context.Context) {
 	if err != nil {
 		log.Warnf("create bucket failed: %v", err)
 	}
-	bytes, err := DownloadImageAsBytes("https://banner2.cleanpng.com/20180408/vae/avgpocfjw.webp")
+	pngBytes, err := DownloadWebpAsPngBytes("https://banner2.cleanpng.com/20180408/vae/avgpocfjw.webp")
 	if err != nil {
 		log.Warnf("download image failed: %v", err)
 	}
-	value, sErr := object.Put(ctx, id, "demo.webp", bytes)
+	value, sErr := object.Put(ctx, id, "demo.webp", pngBytes)
 	if sErr != nil {
 		log.Warnf("save object failed: %v", sErr)
 	}
@@ -141,11 +143,12 @@ func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape
 	}
 }
 
-func DownloadImageAsBytes(url string) ([]byte, error) {
+func DownloadWebpAsPngBytes(url string) ([]byte, error) {
 	client := &http.Client{
 		Timeout: 15 * time.Second,
 	}
 
+	// 下载 .webp 图片
 	resp, err := client.Get(url)
 	if err != nil {
 		return nil, fmt.Errorf("http get error: %w", err)
@@ -156,10 +159,17 @@ func DownloadImageAsBytes(url string) ([]byte, error) {
 		return nil, fmt.Errorf("bad status: %s", resp.Status)
 	}
 
-	imgBytes, err := io.ReadAll(resp.Body)
+	// 解码 WebP -> image.Image
+	img, err := webp.Decode(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("read body error: %w", err)
+		return nil, fmt.Errorf("webp decode error: %w", err)
 	}
 
-	return imgBytes, nil
+	// 编码为 PNG 并写入 buffer
+	var buf bytes.Buffer
+	if err := png.Encode(&buf, img); err != nil {
+		return nil, fmt.Errorf("png encode error: %w", err)
+	}
+
+	return buf.Bytes(), nil
 }
