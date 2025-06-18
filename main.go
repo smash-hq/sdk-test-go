@@ -16,7 +16,7 @@ func main() {
 	if inputErr != nil {
 		log.Errorf("parse input err: %v", inputErr)
 	}
-	client := scrapeless.New(scrapeless.WithScraping())
+	client := scrapeless.New(scrapeless.WithScraping(), scrapeless.WithStorage())
 	scrape, err := client.Scraping.Scrape(ctx, scraping.ScrapingTaskRequest{
 		Actor:        "google.search",
 		Input:        *params,
