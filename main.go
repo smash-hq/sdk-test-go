@@ -102,18 +102,18 @@ func objectSave(client *scrapeless.Client, ctx context.Context) {
 	}
 	value, sErr := object.Put(ctx, id, "demo.webp", bytes)
 	if sErr != nil {
-		log.Warnf("save value failed: %v", sErr)
+		log.Warnf("save object failed: %v", sErr)
 	}
-	log.Infof("save value success, object: %v", value)
+	log.Infof("save object success, object: %v", value)
 }
 
 func kvSave(kv kv.KV, ctx context.Context, scrape []byte, id string, times int) {
 	value, sErr := kv.SetValue(ctx, id, fmt.Sprintf("kv--%d", times), string(scrape), 3600)
 	if sErr != nil {
-		log.Warnf("save value failed: %v", sErr)
+		log.Warnf("save kv failed: %v", sErr)
 	}
 	if !value {
-		log.Infof("save value failed")
+		log.Infof("save kv failed")
 	}
 }
 
