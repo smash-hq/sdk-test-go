@@ -26,7 +26,7 @@
       "title": "Domain",
       "description": "Parameter defines the Google domain to use. It defaults to google.com.",
       "type": "string",
-      "default": "",
+      "default": "google.com",
       "enum": [
         {
           "label": "google.com",
