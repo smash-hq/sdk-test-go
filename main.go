@@ -31,7 +31,7 @@ func main() {
 		log.Warnf("create dataset failed: %v", err)
 	}
 	items, err := dataset.AddItems(ctx, id, []map[string]any{
-		{"title": "Top news headlines", "content": scrape},
+		{"title": "Top news headlines", "content": string(scrape)},
 	})
 	if err != nil {
 		log.Warnf("save dataset failed: %v", err)
