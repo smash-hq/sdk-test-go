@@ -1,0 +1,14 @@
+{
+  "title": "Scrape data from google play store",
+  "type": "object",
+  "schemaVersion": 1,
+  "required": ["q"],
+  "properties": {
+    "q": {
+      "title": "Search Query",
+      "description": "Parameter defines the query you want to search in Google Play Apps Store.",
+      "type": "string",
+      "default": ""
+    }
+  }
+}
