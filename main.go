@@ -48,9 +48,10 @@ func main() {
 	}
 
 	for i := 0; i < params.Limit; i++ {
-		datasetSave(d, err, ctx, scrape, datasetId)
-		kvSave(k, ctx, scrape, kvId)
-		log.Infof("times--> %d", i+1)
+		times := i + 1
+		datasetSave(d, err, ctx, scrape, datasetId, times)
+		kvSave(k, ctx, scrape, kvId, times)
+		log.Infof("times--> %d", times)
 	}
 	objectSave(client, ctx)
 }
@@ -106,8 +107,8 @@ func objectSave(client *scrapeless.Client, ctx context.Context) {
 	log.Infof("save value success, object: %v", value)
 }
 
-func kvSave(kv kv.KV, ctx context.Context, scrape []byte, id string) {
-	value, sErr := kv.SetValue(ctx, id, "scraper.google.search", string(scrape), 3600)
+func kvSave(kv kv.KV, ctx context.Context, scrape []byte, id string, times int) {
+	value, sErr := kv.SetValue(ctx, id, fmt.Sprintf("kv--%d", times), string(scrape), 3600)
 	if sErr != nil {
 		log.Warnf("save value failed: %v", sErr)
 	}
@@ -128,9 +129,9 @@ func scrapingCrawl(client *scrapeless.Client, ctx context.Context, params map[st
 	return scrape, err
 }
 
-func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape []byte, id string) {
+func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape []byte, id string, times int) {
 	items, err := dataset.AddItems(ctx, id, []map[string]any{
-		{"title": "scraper.google.search", "content": string(scrape)},
+		{"title": "scraper.google.search", "content": string(scrape), "times": times},
 	})
 	if err != nil {
 		log.Warnf("save dataset failed: %v", err)
