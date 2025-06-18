@@ -8,7 +8,7 @@
       "title": "Search Query",
       "description": "Parameter defines the query you want to search. You can use anything that you would use in a regular Google search. e.g. inurl:, site:, intitle:. We also support advanced search query parameters such as as_dt and as_eq.",
       "type": "string",
-      "default": ""
+      "default": "Top news headlines"
     },
     "hl": {
       "title": "Language",
