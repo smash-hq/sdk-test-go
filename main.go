@@ -50,6 +50,7 @@ func main() {
 	for i := 0; i < params.Limit; i++ {
 		datasetSave(d, err, ctx, scrape, datasetId)
 		kvSave(k, ctx, scrape, kvId)
+		log.Infof("times--> %d", i+1)
 	}
 	objectSave(client, ctx)
 }
