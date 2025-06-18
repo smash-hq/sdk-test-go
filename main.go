@@ -41,12 +41,12 @@ func main() {
 	k := client.Storage.Kv
 	kvId, _, cErr := k.CreateNamespace(ctx, "scraper.google.search")
 	if cErr != nil {
-		log.Warnf("create namespace failed: %v", cErr)
+		log.Warnf("kv--> create namespace failed: %v", cErr)
 	}
 	d := client.Storage.Dataset
 	datasetId, _, err := d.CreateDataset(ctx, "scraper.google.search")
 	if err != nil {
-		log.Warnf("create d failed: %v", err)
+		log.Warnf("dataset--> create d failed: %v", err)
 	}
 
 	for i := 0; i < params.Limit; i++ {
@@ -104,19 +104,26 @@ func objectSave(client *scrapeless.Client, ctx context.Context) {
 	}
 	value, sErr := object.Put(ctx, id, "demo.png", pngBytes)
 	if sErr != nil {
-		log.Warnf("save object failed: %v", sErr)
+		log.Warnf("object--> save object failed: %v", sErr)
 	}
-	log.Infof("save object success, object: %v", value)
+	log.Infof("object--> save object success, object: %v", value)
 }
 
-func kvSave(kv kv.KV, ctx context.Context, scrape []byte, id string, times int) {
-	value, sErr := kv.SetValue(ctx, id, fmt.Sprintf("kv--%d", times), string(scrape), 3600)
+func kvSave(kvs kv.KV, ctx context.Context, scrape []byte, id string, times int) {
+	str := string(scrape)
+	var kks []kv.BulkItem
+	for i := 0; i < 100; i++ {
+		kks = append(kks, kv.BulkItem{
+			Key:        fmt.Sprintf("%d-%d", times, i),
+			Value:      str,
+			Expiration: 3600,
+		})
+	}
+	value, sErr := kvs.BulkSetValue(ctx, id, kks)
 	if sErr != nil {
-		log.Warnf("save kv failed: %v", sErr)
+		log.Warnf("kv--> save kv failed: %v", sErr)
 	}
-	if !value {
-		log.Infof("save kv failed, isErr: %v", value)
-	}
+	log.Infof("kv--> success count: %d", value)
 }
 
 func scrapingCrawl(client *scrapeless.Client, ctx context.Context, params map[string]interface{}) ([]byte, error) {
@@ -126,20 +133,22 @@ func scrapingCrawl(client *scrapeless.Client, ctx context.Context, params map[st
 		ProxyCountry: "US",
 	})
 	if err != nil {
-		log.Warnf("scraping google.search failed: %v", err)
+		log.Warnf("crawl--> scraping google.search failed: %v", err)
 	}
 	return scrape, err
 }
 
 func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape []byte, id string, times int) {
-	items, err := dataset.AddItems(ctx, id, []map[string]any{
-		{"title": "scraper.google.search", "content": string(scrape), "times": times},
-	})
+	var maps []map[string]any
+	for i := 0; i < 100; i++ {
+		maps = append(maps, map[string]any{"title": "scraper.google.search", "content": string(scrape), "times": times})
+	}
+	items, err := dataset.AddItems(ctx, id, maps)
 	if err != nil {
-		log.Warnf("save dataset failed: %v", err)
+		log.Warnf("dataset--> save dataset failed: %v", err)
 	}
 	if !items {
-		log.Infof("save dataset failed, isErr: %v", items)
+		log.Infof("dataset--> save dataset failed, isErr: %v", items)
 	}
 }
 
