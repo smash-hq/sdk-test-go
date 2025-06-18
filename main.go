@@ -102,7 +102,7 @@ func objectSave(client *scrapeless.Client, ctx context.Context) {
 	if err != nil {
 		log.Warnf("download image failed: %v", err)
 	}
-	value, sErr := object.Put(ctx, id, "demo.webp", pngBytes)
+	value, sErr := object.Put(ctx, id, "demo.png", pngBytes)
 	if sErr != nil {
 		log.Warnf("save object failed: %v", sErr)
 	}
