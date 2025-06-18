@@ -8,6 +8,8 @@ import (
 	"github.com/scrapeless-ai/sdk-go/scrapeless/actor"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/log"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/scraping"
+	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/dataset"
+	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/kv"
 	"io"
 	"net/http"
 	"time"
@@ -34,10 +36,20 @@ func main() {
 	client := scrapeless.New(scrapeless.WithScraping(), scrapeless.WithStorage(), scrapeless.WithUniversal())
 
 	scrape, err := scrapingCrawl(client, ctx, result)
+	k := client.Storage.Kv
+	kvId, _, cErr := k.CreateNamespace(ctx, "scraper.google.search")
+	if cErr != nil {
+		log.Warnf("create namespace failed: %v", cErr)
+	}
+	d := client.Storage.Dataset
+	datasetId, _, err := d.CreateDataset(ctx, "scraper.google.search")
+	if err != nil {
+		log.Warnf("create d failed: %v", err)
+	}
 
 	for i := 0; i < params.Limit; i++ {
-		datasetSave(client, err, ctx, scrape)
-		kvSave(client, ctx, scrape)
+		datasetSave(d, err, ctx, scrape, datasetId)
+		kvSave(k, ctx, scrape, kvId)
 	}
 	objectSave(client, ctx)
 }
@@ -93,12 +105,7 @@ func objectSave(client *scrapeless.Client, ctx context.Context) {
 	log.Infof("save value success, object: %v", value)
 }
 
-func kvSave(client *scrapeless.Client, ctx context.Context, scrape []byte) {
-	kv := client.Storage.Kv
-	id, _, cErr := kv.CreateNamespace(ctx, "scraper.google.search")
-	if cErr != nil {
-		log.Warnf("create namespace failed: %v", cErr)
-	}
+func kvSave(kv kv.KV, ctx context.Context, scrape []byte, id string) {
 	value, sErr := kv.SetValue(ctx, id, "scraper.google.search", string(scrape), 3600)
 	if sErr != nil {
 		log.Warnf("save value failed: %v", sErr)
@@ -120,12 +127,7 @@ func scrapingCrawl(client *scrapeless.Client, ctx context.Context, params map[st
 	return scrape, err
 }
 
-func datasetSave(client *scrapeless.Client, err error, ctx context.Context, scrape []byte) {
-	dataset := client.Storage.Dataset
-	id, _, err := dataset.CreateDataset(ctx, "scraper.google.search")
-	if err != nil {
-		log.Warnf("create dataset failed: %v", err)
-	}
+func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape []byte, id string) {
 	items, err := dataset.AddItems(ctx, id, []map[string]any{
 		{"title": "scraper.google.search", "content": string(scrape)},
 	})
