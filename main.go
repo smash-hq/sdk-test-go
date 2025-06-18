@@ -11,7 +11,7 @@ import (
 func main() {
 	ctx := context.Background()
 	a := actor.New()
-	var params map[string]interface{}
+	var params = &map[string]interface{}{}
 	inputErr := a.Input(params)
 	if inputErr != nil {
 		log.Errorf("parse input err: %v", inputErr)
@@ -19,7 +19,7 @@ func main() {
 	client := scrapeless.New(scrapeless.WithScraping())
 	scrape, err := client.Scraping.Scrape(ctx, scraping.ScrapingTaskRequest{
 		Actor:        "google.search",
-		Input:        params,
+		Input:        *params,
 		ProxyCountry: "US",
 	})
 	if err != nil {
