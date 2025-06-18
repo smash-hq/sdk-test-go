@@ -18,7 +18,7 @@ func main() {
 	}
 	client := scrapeless.New(scrapeless.WithScraping(), scrapeless.WithStorage())
 	scrape, err := client.Scraping.Scrape(ctx, scraping.ScrapingTaskRequest{
-		Actor:        "google.search",
+		Actor:        "scraper.google.search",
 		Input:        *params,
 		ProxyCountry: "US",
 	})
@@ -26,12 +26,12 @@ func main() {
 		log.Warnf("scraping google.search failed: %v", err)
 	}
 	dataset := client.Storage.Dataset
-	id, _, err := dataset.CreateDataset(ctx, "google.search")
+	id, _, err := dataset.CreateDataset(ctx, "scraper.google.search")
 	if err != nil {
 		log.Warnf("create dataset failed: %v", err)
 	}
 	items, err := dataset.AddItems(ctx, id, []map[string]any{
-		{"title": "Top news headlines", "content": string(scrape)},
+		{"title": "scraper.google.search", "content": string(scrape)},
 	})
 	if err != nil {
 		log.Warnf("save dataset failed: %v", err)
