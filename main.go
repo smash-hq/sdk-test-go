@@ -15,6 +15,7 @@ import (
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/kv"
 	"image/png"
 	"net/http"
+	"sync/atomic"
 	"time"
 )
 
@@ -28,6 +29,8 @@ type P struct {
 	Hl       string `json:"hl"`
 	TZ       string `json:"tz"`
 }
+
+var requestTimes atomic.Int64
 
 func main() {
 	ctx := context.Background()
@@ -55,6 +58,7 @@ func main() {
 }
 
 func deepserpCrawl(client *scrapeless.Client, ctx context.Context, a *actor.Actor, input map[string]interface{}) []byte {
+	requestTimes.Add(1)
 	inputBytes, deepErr := client.DeepSerp.Scrape(ctx, deepserp.DeepserpTaskRequest{
 		Actor:        actorConst,
 		Input:        input,
@@ -64,7 +68,7 @@ func deepserpCrawl(client *scrapeless.Client, ctx context.Context, a *actor.Acto
 		log.Warnf("deepserp--> scraping deepserp failed: %v", deepErr)
 	}
 	items, addErr := a.AddItems(ctx, []map[string]interface{}{
-		{"title": actorConst}, {"content": string(inputBytes)},
+		{"request_times": requestTimes.Load(), "title": actorConst, "content": string(inputBytes)},
 	})
 	if addErr != nil {
 		log.Warnf("input--> add items failed: %v", addErr)
