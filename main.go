@@ -38,7 +38,7 @@ func main() {
 	}
 	result := toMapParams(params)
 
-	client := scrapeless.New(scrapeless.WithDeepSerp())
+	client := scrapeless.New(scrapeless.WithDeepSerp(), scrapeless.WithStorage())
 	scrape := deepserpCrawl(client, ctx, a, result)
 
 	k := client.Storage.Kv
