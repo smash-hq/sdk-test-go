@@ -10,6 +10,7 @@ import (
 	"github.com/scrapeless-ai/sdk-go/scrapeless/actor"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/log"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/deepserp"
+	"github.com/scrapeless-ai/sdk-go/scrapeless/services/httpserver"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/dataset"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/kv"
 	"image/png"
@@ -37,28 +38,20 @@ func main() {
 		log.Errorf("parse input err: %v", inputErr)
 	}
 	result := toMapParams(params)
-
 	client := scrapeless.New(scrapeless.WithDeepSerp(), scrapeless.WithStorage())
-	scrape := deepserpCrawl(client, ctx, a, result)
-
-	k := client.Storage.Kv
-	kvId, _, cErr := k.CreateNamespace(ctx, actorConst)
-	if cErr != nil {
-		log.Warnf("kv--> create namespace failed: %v", cErr)
+	server := a.Server
+	server.AddHandleGet("/trend", func(input []byte) (httpserver.Response, error) {
+		scrape := deepserpCrawl(client, ctx, a, result)
+		return httpserver.Response{
+			Code: 200,
+			Data: string(scrape),
+			Msg:  "success",
+		}, nil
+	})
+	inputErr = server.Start()
+	if inputErr != nil {
+		log.Errorf("server--> start failed: %v", inputErr)
 	}
-	d := client.Storage.Dataset
-	datasetId, _, err := d.CreateDataset(ctx, actorConst)
-	if err != nil {
-		log.Warnf("dataset--> create d failed: %v", err)
-	}
-
-	for i := 0; i < params.Limit; i++ {
-		times := i + 1
-		datasetSave(d, err, ctx, scrape, datasetId, times)
-		kvSave(k, ctx, scrape, kvId, times)
-		log.Infof("times--> %d", times)
-	}
-	objectSave(client, ctx)
 }
 
 func deepserpCrawl(client *scrapeless.Client, ctx context.Context, a *actor.Actor, input map[string]interface{}) []byte {
@@ -71,7 +64,7 @@ func deepserpCrawl(client *scrapeless.Client, ctx context.Context, a *actor.Acto
 		log.Warnf("deepserp--> scraping deepserp failed: %v", deepErr)
 	}
 	items, addErr := a.AddItems(ctx, []map[string]interface{}{
-		{"trend": string(inputBytes)}, {"title": actorConst},
+		{"title": actorConst}, {"content": string(inputBytes)},
 	})
 	if addErr != nil {
 		log.Warnf("input--> add items failed: %v", addErr)
@@ -133,7 +126,7 @@ func kvSave(kvs kv.KV, ctx context.Context, scrape []byte, id string, times int)
 func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape []byte, id string, times int) {
 	var maps []map[string]any
 	for i := 0; i < 100; i++ {
-		maps = append(maps, map[string]any{"title": "scraper.google.search", "content": string(scrape), "times": times})
+		maps = append(maps, map[string]any{"title": actorConst, "content": string(scrape), "times": times})
 	}
 	items, err := dataset.AddItems(ctx, id, maps)
 	if err != nil {
