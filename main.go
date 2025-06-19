@@ -51,6 +51,7 @@ func main() {
 			Msg:  "success",
 		}, nil
 	})
+	log.Info("server--> start...")
 	inputErr = a.Start()
 	if inputErr != nil {
 		log.Errorf("server--> start failed: %v", inputErr)
