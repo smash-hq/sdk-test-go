@@ -23,8 +23,8 @@ type P struct {
 	Limit    int    `json:"limit"`
 	Q        string `json:"q"`
 	DataType string `json:"data_type"`
+	Data     string `json:"data"`
 	Hl       string `json:"hl"`
-	Gl       string `json:"gl"`
 	TZ       string `json:"tz"`
 }
 
