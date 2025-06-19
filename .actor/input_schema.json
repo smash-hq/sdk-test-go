@@ -68,6 +68,346 @@
       "description": "time zone offset. default is `-480`.",
       "type": "string",
       "default": "-480"
+    },
+    "geo": {
+      "title": "Location",
+      "description": "Parameter defines the location from where you want the search to originate. It defaults to Worldwide (activated when the value of geo parameter is not set or empty).",
+      "type": "string",
+      "default": "",
+      "enum": [
+        {
+          "label": "Argentina",
+          "value": "AR"
+        },
+        {
+          "label": "Australia",
+          "value": "AU"
+        },
+        {
+          "label": "Austria",
+          "value": "AT"
+        },
+        {
+          "label": "Belgium",
+          "value": "BE"
+        },
+        {
+          "label": "Brazil",
+          "value": "BR"
+        },
+        {
+          "label": "Canada",
+          "value": "CA"
+        },
+        {
+          "label": "Chile",
+          "value": "CL"
+        },
+        {
+          "label": "Colombia",
+          "value": "CO"
+        },
+        {
+          "label": "Czechia",
+          "value": "CZ"
+        },
+        {
+          "label": "Denmark",
+          "value": "DK"
+        },
+        {
+          "label": "Egypt",
+          "value": "EG"
+        },
+        {
+          "label": "Finland",
+          "value": "FI"
+        },
+        {
+          "label": "France",
+          "value": "FR"
+        },
+        {
+          "label": "Germany",
+          "value": "DE"
+        },
+        {
+          "label": "Greece",
+          "value": "GR"
+        },
+        {
+          "label": "Hong Kong",
+          "value": "HK"
+        },
+        {
+          "label": "Hungary",
+          "value": "HU"
+        },
+        {
+          "label": "India",
+          "value": "IN"
+        },
+        {
+          "label": "Indonesia",
+          "value": "ID"
+        },
+        {
+          "label": "Ireland",
+          "value": "IE"
+        },
+        {
+          "label": "Israel",
+          "value": "IL"
+        },
+        {
+          "label": "Italy",
+          "value": "IT"
+        },
+        {
+          "label": "Japan",
+          "value": "JP"
+        },
+        {
+          "label": "Kenya",
+          "value": "KE"
+        },
+        {
+          "label": "Malaysia",
+          "value": "MY"
+        },
+        {
+          "label": "Mexico",
+          "value": "MX"
+        },
+        {
+          "label": "Netherlands",
+          "value": "NL"
+        },
+        {
+          "label": "New Zealand",
+          "value": "NZ"
+        },
+        {
+          "label": "Nigeria",
+          "value": "NG"
+        },
+        {
+          "label": "Norway",
+          "value": "NO"
+        },
+        {
+          "label": "Peru",
+          "value": "PE"
+        },
+        {
+          "label": "Philippines",
+          "value": "PH"
+        },
+        {
+          "label": "Poland",
+          "value": "PL"
+        },
+        {
+          "label": "Portugal",
+          "value": "PT"
+        },
+        {
+          "label": "Romania",
+          "value": "RO"
+        },
+        {
+          "label": "Russia",
+          "value": "RU"
+        },
+        {
+          "label": "Saudi Arabia",
+          "value": "SA"
+        },
+        {
+          "label": "Singapore",
+          "value": "SG"
+        },
+        {
+          "label": "South Africa",
+          "value": "ZA"
+        },
+        {
+          "label": "South Korea",
+          "value": "KR"
+        },
+        {
+          "label": "Spain",
+          "value": "ES"
+        },
+        {
+          "label": "Sweden",
+          "value": "SE"
+        },
+        {
+          "label": "Switzerland",
+          "value": "CH"
+        },
+        {
+          "label": "Taiwan",
+          "value": "TW"
+        },
+        {
+          "label": "Thailand",
+          "value": "TH"
+        },
+        {
+          "label": "Türkiye",
+          "value": "TR"
+        },
+        {
+          "label": "Ukraine",
+          "value": "UA"
+        },
+        {
+          "label": "United Kingdom",
+          "value": "GB"
+        },
+        {
+          "label": "United States",
+          "value": "US"
+        },
+        {
+          "label": "Vietnam",
+          "value": "VN"
+        }
+      ]
+    },
+    "cat": {
+      "title": "Category",
+      "description": "Parameter is used to define a search category. The default value is set to `0` (\"All categories\").",
+      "type": "string",
+      "default": "",
+      "enum": [
+        {
+          "value": "3",
+          "label": "Arts & Entertainment"
+        },
+        {
+          "value": "47",
+          "label": "Autos & Vehicles"
+        },
+        {
+          "value": "44",
+          "label": "Beauty & Fitness"
+        },
+        {
+          "value": "22",
+          "label": "Books & Literature"
+        },
+        {
+          "value": "12",
+          "label": "Business & Industrial"
+        },
+        {
+          "value": "5",
+          "label": "Computers & Electronics"
+        },
+        {
+          "value": "7",
+          "label": "Finance"
+        },
+        {
+          "value": "71",
+          "label": "Food & Drink"
+        },
+        {
+          "value": "8",
+          "label": "Games"
+        },
+        {
+          "value": "45",
+          "label": "Health"
+        },
+        {
+          "value": "65",
+          "label": "Hobbies & Leisure"
+        },
+        {
+          "value": "11",
+          "label": "Home & Garden"
+        },
+        {
+          "value": "13",
+          "label": "Internet & Telecom"
+        },
+        {
+          "value": "958",
+          "label": "Jobs & Education"
+        },
+        {
+          "value": "19",
+          "label": "Law & Government"
+        },
+        {
+          "value": "16",
+          "label": "News"
+        },
+        {
+          "value": "299",
+          "label": "Online Communities"
+        },
+        {
+          "value": "14",
+          "label": "People & Society"
+        },
+        {
+          "value": "66",
+          "label": "Pets & Animals"
+        },
+        {
+          "value": "29",
+          "label": "Real Estate"
+        },
+        {
+          "value": "533",
+          "label": "Reference"
+        },
+        {
+          "value": "174",
+          "label": "Science"
+        },
+        {
+          "value": "18",
+          "label": "Shopping"
+        },
+        {
+          "value": "20",
+          "label": "Sports"
+        },
+        {
+          "value": "67",
+          "label": "Travel"
+        }
+      ]
+    },
+    "property": {
+      "title": "Property",
+      "description": "Parameter is used for sorting results by property. The default property is set to `Web Search` (activated when the value of property parameter is not set or empty). Other available options:\n\n`images` - Image Search\n`news` - News Search\n`froogle` - Google Shopping\n`youtube` - YouTube Search",
+      "type": "string",
+      "default": "",
+      "enum": [
+        {
+          "value": "images",
+          "label": "Image Search"
+        },
+        {
+          "value": "news",
+          "label": "News Search"
+        },
+        {
+          "value": "froogle",
+          "label": "Google Shopping"
+        },
+        {
+          "value": "youtube",
+          "label": "YouTube Search"
+        }
+      ]
     }
   }
 }
