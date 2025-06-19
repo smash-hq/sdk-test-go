@@ -1,8 +1,8 @@
 {
   "actorSpecification": 1,
-  "name": "actor_example_go",
+  "name": "test-recaptcha",
   "version": "main",
-  "avatarUrl": "your-avatar-url",
+  "avatarUrl": "https://avatars.githubusercontent.com/u/67949557?v=4",
   "defaultRunOptions": {
     "timeout": 60,
     "memory": 1024,

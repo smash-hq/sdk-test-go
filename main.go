@@ -8,17 +8,6 @@ import (
 	"time"
 )
 
-const actorConst = "scraper.google.trends"
-
-type P struct {
-	Limit    int    `json:"limit"`
-	Q        string `json:"q"`
-	DataType string `json:"data_type"`
-	Date     string `json:"date"`
-	Hl       string `json:"hl"`
-	TZ       string `json:"tz"`
-}
-
 func main() {
 	client := scrapeless.New(scrapeless.WithCaptcha())
 	//Create captcha task
