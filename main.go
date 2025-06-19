@@ -48,7 +48,7 @@ func main() {
 			Msg:  "success",
 		}, nil
 	})
-	inputErr = server.Start()
+	inputErr = a.Start()
 	if inputErr != nil {
 		log.Errorf("server--> start failed: %v", inputErr)
 	}
