@@ -9,7 +9,7 @@ import (
 	"github.com/scrapeless-ai/sdk-go/scrapeless"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/actor"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/log"
-	"github.com/scrapeless-ai/sdk-go/scrapeless/services/scraping"
+	"github.com/scrapeless-ai/sdk-go/scrapeless/services/deepserp"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/dataset"
 	"github.com/scrapeless-ai/sdk-go/scrapeless/services/storage/kv"
 	"image/png"
@@ -17,12 +17,15 @@ import (
 	"time"
 )
 
+const actorConst = "scraper.google.trends"
+
 type P struct {
-	Limit        int    `json:"limit"`
-	Q            string `json:"q"`
-	Hl           string `json:"hl"`
-	Gl           string `json:"gl"`
-	GoogleDomain string `json:"google_domain"`
+	Limit    int    `json:"limit"`
+	Q        string `json:"q"`
+	DataType string `json:"data_type"`
+	Hl       string `json:"hl"`
+	Gl       string `json:"gl"`
+	TZ       string `json:"tz"`
 }
 
 func main() {
@@ -35,16 +38,16 @@ func main() {
 	}
 	result := toMapParams(params)
 
-	client := scrapeless.New(scrapeless.WithScraping(), scrapeless.WithStorage(), scrapeless.WithUniversal())
+	client := scrapeless.New(scrapeless.WithDeepSerp())
+	scrape := deepserpCrawl(client, ctx, a, result)
 
-	scrape, err := scrapingCrawl(client, ctx, result)
 	k := client.Storage.Kv
-	kvId, _, cErr := k.CreateNamespace(ctx, "scraper.google.search")
+	kvId, _, cErr := k.CreateNamespace(ctx, actorConst)
 	if cErr != nil {
 		log.Warnf("kv--> create namespace failed: %v", cErr)
 	}
 	d := client.Storage.Dataset
-	datasetId, _, err := d.CreateDataset(ctx, "scraper.google.search")
+	datasetId, _, err := d.CreateDataset(ctx, actorConst)
 	if err != nil {
 		log.Warnf("dataset--> create d failed: %v", err)
 	}
@@ -58,25 +61,26 @@ func main() {
 	objectSave(client, ctx)
 }
 
-//func scrapingUniversal(client *scrapeless.Client, ctx context.Context) {
-//	maps := map[string]interface{}{
-//		"url":       "https://www.scrapeless.com",
-//		"method":    "GET",
-//		"redirect":  true,
-//		"js_render": true,
-//		"js_instructions": [{"wait":100}],
-//		"block":{"resources":["image", "font", "script"], "urls":["https://example.com"]}
-//	}
-//	scrape, err := client.Universal.Scrape(ctx, universal.UniversalTaskRequest{
-//		Actor:        universal.ScraperUniversal,
-//		Input:        maps,
-//		ProxyCountry: "US",
-//	})
-//	if err != nil {
-//		log.Warnf("scraping universal failed: %v", err)
-//	}
-//
-//}
+func deepserpCrawl(client *scrapeless.Client, ctx context.Context, a *actor.Actor, input map[string]interface{}) []byte {
+	inputBytes, deepErr := client.DeepSerp.Scrape(ctx, deepserp.DeepserpTaskRequest{
+		Actor:        actorConst,
+		Input:        input,
+		ProxyCountry: "US",
+	})
+	if deepErr != nil {
+		log.Warnf("deepserp--> scraping deepserp failed: %v", deepErr)
+	}
+	items, addErr := a.AddItems(ctx, []map[string]interface{}{
+		{"trend": string(inputBytes)}, {"title": actorConst},
+	})
+	if addErr != nil {
+		log.Warnf("input--> add items failed: %v", addErr)
+	}
+	if !items {
+		log.Infof("input--> add items failed, isErr: %v", items)
+	}
+	return inputBytes
+}
 
 func toMapParams(params *P) map[string]interface{} {
 	// 先编码为 JSON
@@ -124,18 +128,6 @@ func kvSave(kvs kv.KV, ctx context.Context, scrape []byte, id string, times int)
 		log.Warnf("kv--> save kv failed: %v", sErr)
 	}
 	log.Infof("kv--> success count: %d", value)
-}
-
-func scrapingCrawl(client *scrapeless.Client, ctx context.Context, params map[string]interface{}) ([]byte, error) {
-	scrape, err := client.Scraping.Scrape(ctx, scraping.ScrapingTaskRequest{
-		Actor:        "scraper.google.search",
-		Input:        params,
-		ProxyCountry: "US",
-	})
-	if err != nil {
-		log.Warnf("crawl--> scraping google.search failed: %v", err)
-	}
-	return scrape, err
 }
 
 func datasetSave(dataset dataset.Dataset, err error, ctx context.Context, scrape []byte, id string, times int) {
