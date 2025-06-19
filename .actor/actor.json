@@ -2,7 +2,7 @@
   "actorSpecification": 1,
   "name": "test-recaptcha",
   "version": "main",
-  "avatarUrl": "https://assets.scrapeless.com/dev/actors/55b94816-54fc-4b22-8cbd-86f0b4a8327a/0e9b135a73a9d923866b3f00f050541c.png",
+  "avatarURL": "https://assets.scrapeless.com/dev/actors/55b94816-54fc-4b22-8cbd-86f0b4a8327a/0e9b135a73a9d923866b3f00f050541c.png",
   "defaultRunOptions": {
     "timeout": 60,
     "memory": 1024,
